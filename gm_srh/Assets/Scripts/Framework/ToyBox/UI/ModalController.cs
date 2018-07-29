@@ -11,20 +11,20 @@ namespace ToyBox {
 
         /// <summary>デフォルトの閉じるボタン(OKボタンやバツボタンなど)</summary>
         [SerializeField,Header("閉じるボタン(あれば)")]
-        private UIButton defaultExitButton;
+        private UIButton _defaultExitButton;
 
         /// <summary>アニメーション用</summary>
         [SerializeField,Header("モーダル本体のRectTransform")]
-        protected RectTransform modalObject;
+        protected RectTransform _modalObject;
 
         /// <summary>デフォルトのモーダルが閉じた際の引数なしコールバック</summary>
-        private System.Action defaultCallBack;
+        private System.Action _defaultCallBack;
 
         /// <summary>デフォルトのモーダルが閉じた際の引数ありコールバック</summary>
-        private System.Action<object> defaultObjectCallBack;
+        private System.Action<object> _defaultObjectCallBack;
 
         /// <summary>デフォルトコールバック実行時の引数</summary>
-        private object callBackValue;
+        private object _callBackValue;
 
         /// <summary>モーダルの開閉速度</summary>
         private const float MODAL_SPEED = 0.25f;
@@ -35,7 +35,7 @@ namespace ToyBox {
         /// <value>The modal object.</value>
         public RectTransform ModalObject {
 			get {
-				return modalObject;
+				return _modalObject;
 			}
 		}
 
@@ -45,8 +45,8 @@ namespace ToyBox {
         public virtual void Show(){
             ModalObject.localScale = Vector3.zero;
 
-            if(defaultExitButton != null) {
-                defaultExitButton.AddButtonEvent(
+            if(_defaultExitButton != null) {
+                _defaultExitButton.AddButtonEvent(
                     new ButtonEvent(ButtonEventTrigger.OnClick, this.Hide)
                 );
             }
@@ -66,7 +66,7 @@ namespace ToyBox {
         /// </summary>
         /// <param name="defaultCallBack">モーダル表示終了後のコールバック</param>
         public virtual void Show(System.Action defaultCallBack){
-            this.defaultCallBack = defaultCallBack;
+            this._defaultCallBack = defaultCallBack;
             this.Show();
         }
 
@@ -76,8 +76,8 @@ namespace ToyBox {
         /// <param name="defaultCallBack">モーダル表示終了後のコールバック</param>
         /// <param name="value">コールバックの引数</param>
         public void Show(System.Action<object> defaultCallBack,object value) {
-            this.defaultObjectCallBack = defaultCallBack;
-            this.callBackValue = value;
+            this._defaultObjectCallBack = defaultCallBack;
+            this._callBackValue = value;
             this.Show();
 		}
 
@@ -101,12 +101,12 @@ namespace ToyBox {
         protected void OnRemoved() {
             this.OnAfterClose();
 
-            if(defaultCallBack != null){
-                defaultCallBack();
+            if(_defaultCallBack != null){
+                _defaultCallBack();
             }
 
-            if(defaultObjectCallBack != null){
-                defaultObjectCallBack(callBackValue); 
+            if(_defaultObjectCallBack != null){
+                _defaultObjectCallBack(_callBackValue); 
             }
 
             Destroy(this.gameObject);

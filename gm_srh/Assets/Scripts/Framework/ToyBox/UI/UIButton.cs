@@ -21,16 +21,16 @@ namespace ToyBox {
     public class ButtonEvent {
 
         /// <summary>押されたとみなすタイミング</summary>
-        public ButtonEventTrigger trigger { get; private set; }
+        public ButtonEventTrigger EventTrigger { get; private set; }
 
         /// <summary>コールバック</summary>
-        public System.Action action { get; private set; }
+        public System.Action EventCallBack { get; private set; }
 
         /// <summary>引数ありコールバック</summary>
-        public System.Action<object> objectAction { get; private set; }
+        public System.Action<object> EventObjectCallBack { get; private set; }
 
         /// <summary>コールバック時の引数</summary>
-        public object callBackValue;
+        public object CallBackValue { get; private set; }
 
         /// <summary>
         /// コンストラクタ
@@ -39,8 +39,8 @@ namespace ToyBox {
         /// <param name="trigger">タイミング</param>
         /// <param name="action">コールバック</param>
         public ButtonEvent(ButtonEventTrigger trigger, Action action) {
-            this.trigger = trigger;
-            this.action = action;
+            this.EventTrigger = trigger;
+            this.EventCallBack = action;
         }
 
         /// <summary>
@@ -51,69 +51,69 @@ namespace ToyBox {
         /// <param name="objectAction">コールバック</param>
         /// <param name="value">引数</param>
         public ButtonEvent(ButtonEventTrigger trigger, System.Action<object> objectAction, object value) {
-            this.trigger = trigger;
-            this.objectAction = objectAction;
-            this.callBackValue = value;
+            this.EventTrigger = trigger;
+            this.EventObjectCallBack = objectAction;
+            this.CallBackValue = value;
         }
     }
 
-    /// <summary>
-    /// ボタンの設定
-    /// ボタンが処理をおこなうときの設定がまとまっている
-    /// </summary>
-    [System.Serializable]
-    public class ButtonOption {
+	/// <summary>
+	/// ボタンの設定
+	/// ボタンが処理をおこなうときの設定がまとまっている
+	/// </summary>
+	[System.Serializable]
+	public class ButtonOption {
 
-        /// <summary>
-        /// ボタンが押されたときに自動でスケーリング処理をするか
-        /// ここをfalseにすることで独自のアニメーションを実装可能
-        /// </summary>
-        [SerializeField,Header("自動スケーリング")]
-        private bool isAutoScale = true;
+		/// <summary>
+		/// ボタンが押されたときに自動でスケーリング処理をするか
+		/// ここをfalseにすることで独自のアニメーションを実装可能
+		/// </summary>
+		[SerializeField, Header("自動スケーリング")]
+		private bool _isAutoScale = true;
 
-        /// <summary>
-        /// スケーリング具合
-        /// </summary>
-        [SerializeField, Range(0.0f, 1.0f),Header("スケーリング率")]
-        private float scalePower = 0.1f;
+		/// <summary>
+		/// スケーリング具合
+		/// </summary>
+		[SerializeField, Range(0.0f, 1.0f), Header("スケーリング率")]
+		private float _scalePower = 0.1f;
 
-        [SerializeField, Range(0.0f, 1.0f), Header("スケーリング速度")]
-        private float scaleSpeed = 0.25f;
+		[SerializeField, Range(0.0f, 1.0f), Header("スケーリング速度")]
+		private float _scaleSpeed = 0.5f;
 
-        /// <summary>
-        /// 長押しとみなす時間
-        /// </summary>
-        [SerializeField,Header("長押しとみなす時間")]
-        private float longPressTime = 1.5f;
+		/// <summary>
+		/// 長押しとみなす時間
+		/// </summary>
+		[SerializeField, Header("長押しとみなす時間")]
+		private float _longPressTime = 1.5f;
 
-        /// <summary>
-        /// 自動でスケーリング処理をおこなう
-        /// </summary>
-        public bool IsAutoScale {
-            get { return isAutoScale; }
-        }
+		/// <summary>
+		/// 自動でスケーリング処理をおこなう
+		/// </summary>
+		public bool IsAutoScale {
+			get { return _isAutoScale; }
+		}
 
-        /// <summary>
-        /// AutoScaleモードでスケーリングする量
-        /// </summary>
-        public float ScalePower {
-            get { return 1.0f - scalePower; }
-        }
+		/// <summary>
+		/// AutoScaleモードでスケーリングする量
+		/// </summary>
+		public float ScalePower {
+			get { return 1.0f - _scalePower; }
+		}
 
-        /// <summary>
-        /// AutoScaleモードでスケーリングする速度
-        /// </summary>
-        public float ScaleSpeed {
-            get { return 1.0f - scaleSpeed; }
-        }
+		/// <summary>
+		/// AutoScaleモードでスケーリングする速度
+		/// </summary>
+		public float ScaleSpeed {
+			get { return 1.0f - _scaleSpeed; }
+		}
 
-        /// <summary>
-        /// 長押しとみなす時間
-        /// </summary>
-        public float LongPressTime{
-            get { return longPressTime; }
-        }
-    }
+		/// <summary>
+		/// 長押しとみなす時間
+		/// </summary>
+		public float LongPressTime {
+			get { return _longPressTime; }
+		}
+	}
 
     /// <summary>
     /// UIに使用されるボタンの機能
@@ -125,14 +125,14 @@ namespace ToyBox {
                             IPointerUpHandler {
         
         /// <summary>ボタンのコールバック情報</summary>
-        protected readonly List<ButtonEvent> btnEvents = new List<ButtonEvent>();
+        protected readonly List<ButtonEvent> _btnEvents = new List<ButtonEvent>();
 
         /// <summary>ボタンの設定</summary>
         [SerializeField]
-        protected ButtonOption btnOption;
+        protected ButtonOption _btnOption;
 
 		/// <summary>長押し検出用コルーチン</summary>
-		private Coroutine longPressDetectCoroutine;
+		private Coroutine _longPressDetectCoroutine;
 
 		/// <summary>
         /// このボタンが現在押されている状態であるか
@@ -144,7 +144,7 @@ namespace ToyBox {
         /// ※読み取り専用
         /// </summary>
         public ButtonOption BtnOption {
-            get { return btnOption; }
+            get { return _btnOption; }
         }
 
         /// <summary>
@@ -153,10 +153,10 @@ namespace ToyBox {
         /// <param name="btnEvent">コールバック情報</param>
         public void AddButtonEvent(ButtonEvent btnEvent) {
             if(btnEvent == null) {
-                Debug.LogWarning("[ToyBox]コールバックがNULL");
+                AppDebug.LogWarning("[ToyBox]コールバックがNULL");
             }
             else {
-                btnEvents.Add(btnEvent);
+                _btnEvents.Add(btnEvent);
             }
         }
 
@@ -164,15 +164,15 @@ namespace ToyBox {
 		/// コールバック情報を初期化する
 		/// </summary>
 		public void ResetEventCallBack() {
-			btnEvents.Clear();
+			_btnEvents.Clear();
 		}
         /// <summary>
         /// カーソルが押されたときの処理
         /// </summary>
         protected virtual void OnPressed() {
-            if(btnOption.IsAutoScale) {
+            if(_btnOption.IsAutoScale) {
                 //スケール処理
-                this.transform.DOScale(Vector3.one * btnOption.ScalePower, btnOption.ScaleSpeed);
+                this.transform.DOScale(Vector3.one * _btnOption.ScalePower, _btnOption.ScaleSpeed);
             }
         }
 
@@ -187,8 +187,8 @@ namespace ToyBox {
         /// カーソルが離された時の処理
         /// </summary>
         protected virtual void OnReleased() {
-            if(btnOption.IsAutoScale) {
-                this.transform.DOScale(Vector3.one, btnOption.ScaleSpeed);
+            if(_btnOption.IsAutoScale) {
+                this.transform.DOScale(Vector3.one, _btnOption.ScaleSpeed);
             }
         }
 
@@ -196,10 +196,10 @@ namespace ToyBox {
         /// 長押しとみなすかの検出を行う
         /// </summary>
         private IEnumerator DetectLongPress(){
-            yield return new WaitForSeconds(btnOption.LongPressTime);
+            yield return new WaitForSeconds(_btnOption.LongPressTime);
             if(IsUsing){
                 //長押しコールバック実行
-                foreach(var action in btnEvents.FindAll(_ => _.trigger == ButtonEventTrigger.OnLongPress)) {
+                foreach(var action in _btnEvents.FindAll(_ => _.EventTrigger == ButtonEventTrigger.OnLongPress)) {
                     ExecButtonEvent(action);
                 }
             }
@@ -214,13 +214,13 @@ namespace ToyBox {
             
             if(btnEvent == null) return;
  
-            if(btnEvent.action != null) {
-                btnEvent.action();
+            if(btnEvent.EventCallBack != null) {
+                btnEvent.EventCallBack();
                 return;
             }
 
-            if(btnEvent.objectAction != null) {
-                btnEvent.objectAction(btnEvent.callBackValue);
+            if(btnEvent.EventObjectCallBack != null) {
+                btnEvent.EventObjectCallBack(btnEvent.CallBackValue);
                 return;
             }
         }
@@ -240,7 +240,7 @@ namespace ToyBox {
 
             this.OnReleased();
 
-            foreach(var action in btnEvents.FindAll(_ => _.trigger == ButtonEventTrigger.OnClick)) {
+            foreach(var action in _btnEvents.FindAll(_ => _.EventTrigger == ButtonEventTrigger.OnClick)) {
                 ExecButtonEvent(action);
             }
         }
@@ -254,11 +254,11 @@ namespace ToyBox {
             IsUsing = true;
 
             //長押しの検出を開始する
-            this.longPressDetectCoroutine = StartCoroutine(this.DetectLongPress());
+            this._longPressDetectCoroutine = StartCoroutine(this.DetectLongPress());
 
             this.OnPressed();
 
-            foreach(var action in btnEvents.FindAll(_ => _.trigger == ButtonEventTrigger.OnDown)) {
+            foreach(var action in _btnEvents.FindAll(_ => _.EventTrigger == ButtonEventTrigger.OnDown)) {
                 ExecButtonEvent(action);
             }
         }
@@ -272,11 +272,11 @@ namespace ToyBox {
             IsUsing = false;
 
             //長押しの検出を中断する
-            StopCoroutine(this.longPressDetectCoroutine);
+            StopCoroutine(this._longPressDetectCoroutine);
 
             this.OnReleased();
 
-            foreach(var action in btnEvents.FindAll(_ => _.trigger == ButtonEventTrigger.OnRelease)) {
+            foreach(var action in _btnEvents.FindAll(_ => _.EventTrigger == ButtonEventTrigger.OnRelease)) {
                 ExecButtonEvent(action);
             }
         }

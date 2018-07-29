@@ -11,6 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa6858faa54aa448a88828aace74afe9, type: 3}
   m_Name: ToyBoxConfig
   m_EditorClassIdentifier: 
-  _modalPath: Resources/Modal/
+  _modalPath: Resources/Modal
   _sePath: Resources/Audio/Se
   _bgmPath: Resources/Audio/Bgm
